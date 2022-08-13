@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>test</title>
+    <url>/2022/07/26/test/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>diary</title>
     <url>/2022/07/26/diary/</url>
     <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
@@ -18,10 +23,5 @@
       <tags>
         <tag>life</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>test</title>
-    <url>/2022/07/26/test/</url>
-    <content><![CDATA[]]></content>
   </entry>
 </search>
