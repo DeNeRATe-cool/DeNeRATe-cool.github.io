@@ -1197,7 +1197,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #96e2af;
+  background: #4637d5;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2156,6 +2156,12 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: 50% 50%;
+}
+.popup {
+  opacity: 0.75;
+}
+.main-inner {
+  opacity: 0.75;
 }
 .search-pop-overlay {
   background: rgba(0,0,0,0.3);
