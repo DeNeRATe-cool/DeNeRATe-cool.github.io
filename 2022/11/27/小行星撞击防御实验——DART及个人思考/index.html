@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/b32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/b16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"denerate.top","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="小行星撞击防御实验——DART及个人思考PART Ⅰ什么是小行星撞击防御  行星防御（Planetary Defense）即应用一定的技术，以检测小行星或彗星撞击地球的可能性并发出警告，然后防止它们或减轻其可能的影响。  行星防御涉及寻找和跟踪有撞击地球危险的近地物体。 确定这些物体的特征，以确定其轨道轨迹、大小、形状、质量、组成、旋转动力学和其他参数，以便专家能够确定潜在撞击事件的严重性，警告其">
+<meta property="og:type" content="article">
+<meta property="og:title" content="小行星撞击防御实验——DART及个人思考">
+<meta property="og:url" content="http://denerate.top/2022/11/27/%E5%B0%8F%E8%A1%8C%E6%98%9F%E6%92%9E%E5%87%BB%E9%98%B2%E5%BE%A1%E5%AE%9E%E9%AA%8C%E2%80%94%E2%80%94DART%E5%8F%8A%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83/index.html">
+<meta property="og:site_name" content="DeNeRATe">
+<meta property="og:description" content="小行星撞击防御实验——DART及个人思考PART Ⅰ什么是小行星撞击防御  行星防御（Planetary Defense）即应用一定的技术，以检测小行星或彗星撞击地球的可能性并发出警告，然后防止它们或减轻其可能的影响。  行星防御涉及寻找和跟踪有撞击地球危险的近地物体。 确定这些物体的特征，以确定其轨道轨迹、大小、形状、质量、组成、旋转动力学和其他参数，以便专家能够确定潜在撞击事件的严重性，警告其">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/a4FOUCVKXZlfpG6.webp">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/IxwaW4GmvlDYJPg.webp">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/NE534hHXiJZjs7x.png">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/IXejNZdgSqym8DR.gif">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/oBJFrWjVHYaLsye.png">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/oOVTSU7zX9fLbGv.png">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/xwDUtmvlqseW6pj.png">
+<meta property="og:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/ZBkvLlPs2aJOw9I.webp">
+<meta property="article:published_time" content="2022-11-27T09:23:31.000Z">
+<meta property="article:modified_time" content="2022-11-27T09:25:29.487Z">
+<meta property="article:author" content="DeNeRATe">
+<meta property="article:tag" content="BUAA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:/blog/denerate/source/_posts/小行星撞击防御实验——DART及个人思考/a4FOUCVKXZlfpG6.webp">
+
+<link rel="canonical" href="http://denerate.top/2022/11/27/%E5%B0%8F%E8%A1%8C%E6%98%9F%E6%92%9E%E5%87%BB%E9%98%B2%E5%BE%A1%E5%AE%9E%E9%AA%8C%E2%80%94%E2%80%94DART%E5%8F%8A%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>小行星撞击防御实验——DART及个人思考 | DeNeRATe</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DeNeRATe</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">love is hard to cut off,lifelong lovesickness</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://denerate.top/2022/11/27/%E5%B0%8F%E8%A1%8C%E6%98%9F%E6%92%9E%E5%87%BB%E9%98%B2%E5%BE%A1%E5%AE%9E%E9%AA%8C%E2%80%94%E2%80%94DART%E5%8F%8A%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/gravatar.jpg">
+      <meta itemprop="name" content="DeNeRATe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeNeRATe">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          小行星撞击防御实验——DART及个人思考
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-11-27 17:23:31 / Modified: 17:25:29" itemprop="dateCreated datePublished" datetime="2022-11-27T17:23:31+08:00">2022-11-27</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/11/27/%E5%B0%8F%E8%A1%8C%E6%98%9F%E6%92%9E%E5%87%BB%E9%98%B2%E5%BE%A1%E5%AE%9E%E9%AA%8C%E2%80%94%E2%80%94DART%E5%8F%8A%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/11/27/%E5%B0%8F%E8%A1%8C%E6%98%9F%E6%92%9E%E5%87%BB%E9%98%B2%E5%BE%A1%E5%AE%9E%E9%AA%8C%E2%80%94%E2%80%94DART%E5%8F%8A%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="小行星撞击防御实验——DART及个人思考"><a href="#小行星撞击防御实验——DART及个人思考" class="headerlink" title="小行星撞击防御实验——DART及个人思考"></a>小行星撞击防御实验——DART及个人思考</h1><h2 id="PART-Ⅰ"><a href="#PART-Ⅰ" class="headerlink" title="PART Ⅰ"></a>PART Ⅰ</h2><h3 id="什么是小行星撞击防御"><a href="#什么是小行星撞击防御" class="headerlink" title="什么是小行星撞击防御"></a>什么是小行星撞击防御</h3><blockquote>
+<p> 行星防御（Planetary Defense）即应用一定的技术，以检测小行星或彗星撞击地球的可能性并发出警告，然后防止它们或减轻其可能的影响。</p>
+</blockquote>
+<p>行星防御涉及寻找和跟踪有撞击地球危险的近地物体。</p>
+<p>确定这些物体的特征，以确定其轨道轨迹、大小、形状、质量、组成、旋转动力学和其他参数，以便专家能够确定潜在撞击事件的严重性，警告其时间和潜在影响，并确定减轻影响的手段；以及规划和实施各种措施，以偏转或扰乱与地球发生撞击的物体，或减轻无法防止的撞击的影响。</p>
+<p>在地球上可以采取的保护生命和财产的缓解措施包括疏散撞击区域和移动关键基础设施。</p>
+<h3 id="为什么要研究主动防御"><a href="#为什么要研究主动防御" class="headerlink" title="为什么要研究主动防御"></a>为什么要研究主动防御</h3><p>在2019年年初，被发现的近地小行星的数量总共超过了19000颗。平均每周增加30个新发现。2016年10月13日达到15,000个里程碑，标志着自2013年以来已知的近地小行星数量增加了50%，当年8月发现的小行星达到10,000个。</p>
+<p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\a4FOUCVKXZlfpG6.webp" alt="96dda144ad3459828a886813746d37a6caef8451.webp"></p>
+<p>这些小行星里，有一些似乎对地球不那么“友好”，因为它们的轨道与地球轨道会有交叉的部分，这就意味着其有可能碰撞！</p>
+<p>仅以2013年著名的“俄罗斯车里雅宾斯克小行星事件”为例，一颗直径仅15~17米的小行星冲进地球，就在一个人口稀少的城市造成了1491人伤亡。而对于一颗km级别的小行星，其相当于地球发生了一场全球核战争！</p>
+<p>为了提前防止这一天的到来，也就应运而生了全球首次深空奔袭撞击小行星的实验——DART</p>
+<h3 id="DART目标"><a href="#DART目标" class="headerlink" title="DART目标"></a>DART目标</h3><p>不同于日本的“隼鸟号”和美国之前的“冥王号”小行星采样，也不同于中国“嫦娥2号”和”罗塞塔“号等飞掠，这次美国的DART会直接撞上小行星Dimorphos，其瞬间粉身碎骨，把全部动量传递给小行星变轨（该防御任务不用直接摧毁小行星，当然也没有这个能力），其仅需稍稍改变小行星的运行轨道，使其”失之毫厘，谬以千里“，最大限度改变之后的运行轨迹。在正式防御小行星撞击时，其就可以错过于地球的撞击。而在深空中，一旦错过，也就是永别了！</p>
+<p>选择孪生小行星Dimorphos和Didymos的原因是绝对安全，不会将其”推向“地球，且其大小适中，我们对其观测也很完备，可以做到万无一失！</p>
+<p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\IxwaW4GmvlDYJPg.webp" alt="35a85edf8db1cb1341191c34a1cd504593584bcc.webp"></p>
+<p>对于此次任务，正常情况下Dimorphos的轨道周期是11.9h，其直径仅160m，飞行环境纯粹，DART撞击可以将这个自身只能1000万倍的小行星速度改变0.4$ ms/s $，但已经能让它的轨道周期变化10min</p>
+<blockquote>
+<p>DART’s Mission Objectives:</p>
+<p>Demonstrate a kinetic impact with Dimorphos.<br>Change the binary orbital period of Dimorphos.<br>Use ground-based telescope observations to measure Dimorphos’ period change before and after impact.<br>Measure the effects of the impact and resulting ejecta on Dimorphos.</p>
+</blockquote>
+<h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p><strong>预测轨道：</strong>近地天体研究中心（CNEOS）根据报告给小行星中心的位置计算近地天体的高精度轨道路径，CNEOS为新发现的小行星计算轨道，并对危险小行星相对于地球未来可能的位置进行长期分析，以确定和警告任何撞击危险</p>
+<p>（DART并不需要携带科学仪器，事实上也没有时间进行测量，但是我们希望能够得到其撞击的图像以及撞击之后的资料，这就需要不同的观测手段）</p>
+<p><strong>远距离观测：</strong>有部署在10余个国家和地区的近20台地面望远镜参加了这次联合观测。与此同时，太空之中的哈勃太空望远镜和詹姆斯韦伯望远镜，小行星探测器Lucy，都把镜头对准了撞击地点。（但是远观并不能提供非常清晰的图像）</p>
+<p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\NE534hHXiJZjs7x.png" alt="无标题-2.png"></p>
+<p><strong>近距离观测：</strong>DART自身携带了一个小卫星LICIACube，其携带了两部高清相机，会在撞击完成后的2min45s飞抵现场，记录撞击后的情况。当然，最近距离的肯定是DART自己携带的高清相机了，其在撞击前最后2s拍下了距离小行星最近的也是最清晰的一张图片</p>
+<p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\IXejNZdgSqym8DR.gif" alt="6763579ae83de50601f03f5eb0ef9be1.gif"></p>
+<p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\oBJFrWjVHYaLsye.png" alt="penultimate_dart_0401930049_43695_01_iof_imagedisplay-final.png"></p>
+<h3 id="中国”保卫地球“任务"><a href="#中国”保卫地球“任务" class="headerlink" title="中国”保卫地球“任务"></a>中国”保卫地球“任务</h3><blockquote>
+<p>DART所测试的只是卫星防御计划的手段之一。另外，还有借助核爆、动能撞击、激光烧蚀、离子束牵引、引力拖拽、质量驱动等主动手段，破坏小行星的结构或者偏转小行星的轨道。</p>
+</blockquote>
+<p>吴艳华透露，未来中国将组织编制近地小行星防御发展规划等任务，争取在”十四五“末期或者2025、2026年实施一次对某一颗有威胁的小行星进行抵近观测，实施就近撞击。</p>
+<h2 id="PART-Ⅱ"><a href="#PART-Ⅱ" class="headerlink" title="PART Ⅱ"></a>PART Ⅱ</h2><h3 id="对深空探测的意义"><a href="#对深空探测的意义" class="headerlink" title="对深空探测的意义"></a>对深空探测的意义</h3><h4 id="探寻生命"><a href="#探寻生命" class="headerlink" title="探寻生命"></a>探寻生命</h4><p>起源于探月工程，再到小天体采样任务，无一不是由人类对宇宙万物的好奇心驱使的。就像是黑夜中的独行者想要找到相互诉说的陪伴。嫦娥玉兔桂花树是古人浪漫的期盼向往，彗星上的有机物是现代人科学的曙光。</p>
+<p>人们怀着尊重与自豪向宇宙发出无数次的呐喊，旅行者Ⅰ号携带的黄金唱片，真正得寄托了人们在真空无依得宇宙交流的渴望！唱片包含了55中人类语言，时任联合国秘书长库尔特和时任美国总统卡特的问候，90分钟的声乐集锦，包括地球自然界的各种声音以及27首世界名曲，其中包含了中国的古琴曲《高山流水》，还有115幅影像他，太阳系各行星的图片、人类生殖器图像及说明。</p>
+<blockquote>
+<p>“这是一份来自一个遥远的小小世界的礼物，上面记载着我们的声音、我们的科学、我们的影像、我们的音乐、我们的思想和感情。我们正努力生活过我们的时代，进入你们的时代。”                                                                        ——时任美国总统卡特</p>
+</blockquote>
+<p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\oOVTSU7zX9fLbGv.png" alt="无标题-1.png"></p>
+<h4 id="促进科技发展"><a href="#促进科技发展" class="headerlink" title="促进科技发展"></a>促进科技发展</h4><p>虽说太空探索表面仅是促进航空航天技术的发展。但是，航空航天技术总是带领着科技进行变革的，每探索一个未曾涉足的领域，需要的新技术不是一两个突破就可以完成的，而是需要最前沿的科技互相协同并进。</p>
+<p>太空探索迫使电子元件小型化，开启了电脑、网际网络、现代电子通讯设备、全球定位系统和微晶片等科技的革命之门。</p>
+<p>另外想一想，科技进步是人类区别于世间其他物种的本质特征创造的，推动科技的发展也就是推动了历史车轮的滚滚向前。</p>
+<h4 id="提高人类生活质量"><a href="#提高人类生活质量" class="headerlink" title="提高人类生活质量"></a>提高人类生活质量</h4><p>1970年当时身为NASA太空航行中心的科学副总监史都林格博士在写给赞比亚的Mary Jucunda修女的信中谈到了他对太空探索的重要性的理解</p>
+<p>修女问道：”在目前地球上还有儿童由于饥饿面临死亡威胁的情况下，为什么还要花费数十亿美元进行飞向火星的航行？“我想这个问题一定不是个例，而是范例的代表。</p>
+<p>史都林格博士认为首先，从现在开始暂停所有的太空项目，直到孩子们都吃上饭再说，这种方式并不会比探索星空对于消除饥荒的作用来得大。</p>
+<p>显微镜的发明消除了世界上大部分地区肆虐的瘟疫和其他传染性疾病。同理，对于太空项目，可以涉及农业、畜牧业、渔业以及其他大规模生产活动，通过高科技手段，如灌溉管理、肥料的使用、天气预报、产量评估、程序化种植、农田优选农作物调查及收割计划来显著提高土地生产效率。通过人造地球卫星完成这些任务，带来的利益可比每年国会批准给航空航天项目的数十亿来得多</p>
+<h4 id="提高一代人的科学素养"><a href="#提高一代人的科学素养" class="headerlink" title="提高一代人的科学素养"></a>提高一代人的科学素养</h4><p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\xwDUtmvlqseW6pj.png" alt="无标题.png"></p>
+<p>这张图来自到达太阳系边缘的旅行者Ⅰ号距离地球60亿千米之外的地方回望地球时拍下的，最著名、也是最震撼的——”黯淡蓝点“。这足以改变我们面对他人和看待地球的方式，我们不会再仅局限于互相猜忌，而是更多地将有限的生命放任与大地长空、远山沧海</p>
+<h3 id="对中国深空探测的发展"><a href="#对中国深空探测的发展" class="headerlink" title="对中国深空探测的发展"></a>对中国深空探测的发展</h3><p>了解人类深空探测历史的过程中，大部分视野是被美国占据了，这对于我来说是很大的触动，中国是对这一方面不感兴趣吗，还是……</p>
+<p>我们抛开改革开放之前的深空探测历史，对于当代的发展，中国从成绩上来说确实是稳扎稳打，几乎没有失败，这在空天史上是极大的成功，但是正是由于这种头衔，或者可以说是国民的期待以及国情的压力，在新时代的发展中我们不容许失败，人民的热情才会更加高涨，使得中国在航空航天领域一再保守，对于一般团队出于兴趣的空天探索项目都是不会得到资助的，这于美国就相形见绌了，任何有创新、对人类探索有利的项目都可以参与竞争，得到立项支持。</p>
+<p>另外，中国给人民的关于航空航天的消息着实太主观了。在网上进行搜索，并不能得到太多客观的对于中国航空航天的评价，甚至对于相关任务的信息都是报道式的主观概论，这对于国民客观了解航空航天工程发展都是不利的。相较于美国，NASA官网可以看到每个任务的大部分信息，让人们真正了解自己想要了解的客观一面。</p>
+<p>中国未来深空探测的发展包括建立中国空间站、”保卫地球“小行星防御任务等。这些任务都需要大量的人才，我希望，越来越多的人才能够有施展自己才华，展示自己思想的空间，更多的包容总结，而不是更多程式化的主观限制，也希望能够让国民更多了解中国航空航天事业，让空天梦不属于少部分人，让它扎根进更多人的心中！</p>
+<p><img src="C:\blog\denerate\source\_posts\小行星撞击防御实验——DART及个人思考\ZBkvLlPs2aJOw9I.webp" alt="54fbb2fb43166d22767252cddf83fdfd9152d289.webp"></p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/26968968/answer/684356472">太空探索让人类获得了哪些实实在在的收益？</a></p>
+<p><a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1743999269597986408&amp;wfr=spider&amp;for=pc">“保卫地球”行星防御计划将迎首次撞击测试，能不能行得通？</a></p>
+<p><a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1745200909710413989&amp;wfr=spider&amp;for=pc">主动防御！人类航天器首次深空奔袭撞击小行星</a></p>
+<p><a target="_blank" rel="noopener" href="https://dart.jhuapl.edu/">Double Asteroid Redirection Test</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.nasa.gov/planetarydefense/dart/dart-news">DART in the News</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/BUAA/" rel="tag"># BUAA</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/11/26/The-Differences-in-Grammar-between-AE-BE/" rel="prev" title="The Differences in Grammar between AE & BE">
+      <i class="fa fa-chevron-left"></i> The Differences in Grammar between AE & BE
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E8%A1%8C%E6%98%9F%E6%92%9E%E5%87%BB%E9%98%B2%E5%BE%A1%E5%AE%9E%E9%AA%8C%E2%80%94%E2%80%94DART%E5%8F%8A%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">小行星撞击防御实验——DART及个人思考</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PART-%E2%85%A0"><span class="nav-number">1.1.</span> <span class="nav-text">PART Ⅰ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%B0%8F%E8%A1%8C%E6%98%9F%E6%92%9E%E5%87%BB%E9%98%B2%E5%BE%A1"><span class="nav-number">1.1.1.</span> <span class="nav-text">什么是小行星撞击防御</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%A0%94%E7%A9%B6%E4%B8%BB%E5%8A%A8%E9%98%B2%E5%BE%A1"><span class="nav-number">1.1.2.</span> <span class="nav-text">为什么要研究主动防御</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DART%E7%9B%AE%E6%A0%87"><span class="nav-number">1.1.3.</span> <span class="nav-text">DART目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.4.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E5%9B%BD%E2%80%9D%E4%BF%9D%E5%8D%AB%E5%9C%B0%E7%90%83%E2%80%9C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.1.5.</span> <span class="nav-text">中国”保卫地球“任务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PART-%E2%85%A1"><span class="nav-number">1.2.</span> <span class="nav-text">PART Ⅱ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E6%B7%B1%E7%A9%BA%E6%8E%A2%E6%B5%8B%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">对深空探测的意义</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A2%E5%AF%BB%E7%94%9F%E5%91%BD"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">探寻生命</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%83%E8%BF%9B%E7%A7%91%E6%8A%80%E5%8F%91%E5%B1%95"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">促进科技发展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%90%E9%AB%98%E4%BA%BA%E7%B1%BB%E7%94%9F%E6%B4%BB%E8%B4%A8%E9%87%8F"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">提高人类生活质量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%90%E9%AB%98%E4%B8%80%E4%BB%A3%E4%BA%BA%E7%9A%84%E7%A7%91%E5%AD%A6%E7%B4%A0%E5%85%BB"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">提高一代人的科学素养</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E4%B8%AD%E5%9B%BD%E6%B7%B1%E7%A9%BA%E6%8E%A2%E6%B5%8B%E7%9A%84%E5%8F%91%E5%B1%95"><span class="nav-number">1.2.2.</span> <span class="nav-text">对中国深空探测的发展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">1.3.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="DeNeRATe"
+      src="/images/gravatar.jpg">
+  <p class="site-author-name" itemprop="name">DeNeRATe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/DeNeRATe-cool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;DeNeRATe-cool" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.luogu.com.cn/user/38171" title="luogu → https:&#x2F;&#x2F;www.luogu.com.cn&#x2F;user&#x2F;38171" rel="noopener" target="_blank"><i class="fa fa-fw fa-code"></i>luogu</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/2471749995?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;2471749995?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">dx</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/2176432198?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;2176432198?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">qrp</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/2609805018?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;2609805018?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">wzh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/630118646?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;630118646?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">syh</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DeNeRATe</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">119k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">1:48</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v6.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uXldDxmh5eK3mUatmlEkTUI5-gzGzoHsz',
+      appKey     : 'WVg9f2AP47AOb3f2TP0n7pnD',
+      placeholder: "please input your comment...",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+<script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

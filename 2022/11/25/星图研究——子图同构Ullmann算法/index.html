@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/b32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/b16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"denerate.top","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="星图研究——子图同构Ullmann算法背景​    为了在全天星图中找到想要识别的星体，如果仅凭肉眼，是很难实现的，那么我们就需要寻求计算机的帮助，设计高效的算法来进行精准快速的匹配。也就应运而生了两种主要的算法  \begin{cases} 子图同构算法 &amp; Subgraph &amp; isomorphism &amp; problem \\ 模式识别算法 &amp; Pattern &amp; recognition &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="星图研究——子图同构Ullmann算法">
+<meta property="og:url" content="http://denerate.top/2022/11/25/%E6%98%9F%E5%9B%BE%E7%A0%94%E7%A9%B6%E2%80%94%E2%80%94%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84Ullmann%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="DeNeRATe">
+<meta property="og:description" content="星图研究——子图同构Ullmann算法背景​    为了在全天星图中找到想要识别的星体，如果仅凭肉眼，是很难实现的，那么我们就需要寻求计算机的帮助，设计高效的算法来进行精准快速的匹配。也就应运而生了两种主要的算法  \begin{cases} 子图同构算法 &amp; Subgraph &amp; isomorphism &amp; problem \\ 模式识别算法 &amp; Pattern &amp; recognition &amp;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2022/11/26/1MDkmJEfiq2xRhy.webp">
+<meta property="og:image" content="https://s2.loli.net/2022/11/26/jkmTFVhrPWuOMyd.png">
+<meta property="og:image" content="https://s2.loli.net/2022/11/26/ixj5KBZlCh8gsU2.png">
+<meta property="og:image" content="https://s2.loli.net/2022/11/26/3Ts4iflne8jCtg2.png">
+<meta property="article:published_time" content="2022-11-25T12:24:32.000Z">
+<meta property="article:modified_time" content="2022-11-27T11:48:07.281Z">
+<meta property="article:author" content="DeNeRATe">
+<meta property="article:tag" content="BUAA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/11/26/1MDkmJEfiq2xRhy.webp">
+
+<link rel="canonical" href="http://denerate.top/2022/11/25/%E6%98%9F%E5%9B%BE%E7%A0%94%E7%A9%B6%E2%80%94%E2%80%94%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84Ullmann%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>星图研究——子图同构Ullmann算法 | DeNeRATe</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DeNeRATe</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">love is hard to cut off,lifelong lovesickness</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://denerate.top/2022/11/25/%E6%98%9F%E5%9B%BE%E7%A0%94%E7%A9%B6%E2%80%94%E2%80%94%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84Ullmann%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/gravatar.jpg">
+      <meta itemprop="name" content="DeNeRATe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DeNeRATe">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          星图研究——子图同构Ullmann算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-11-25 20:24:32" itemprop="dateCreated datePublished" datetime="2022-11-25T20:24:32+08:00">2022-11-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-11-27 19:48:07" itemprop="dateModified" datetime="2022-11-27T19:48:07+08:00">2022-11-27</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/11/25/%E6%98%9F%E5%9B%BE%E7%A0%94%E7%A9%B6%E2%80%94%E2%80%94%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84Ullmann%E7%AE%97%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/11/25/%E6%98%9F%E5%9B%BE%E7%A0%94%E7%A9%B6%E2%80%94%E2%80%94%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84Ullmann%E7%AE%97%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>7.1k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>6 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <span id="more"></span>
+<h1 id="星图研究——子图同构Ullmann算法"><a href="#星图研究——子图同构Ullmann算法" class="headerlink" title="星图研究——子图同构Ullmann算法"></a>星图研究——子图同构Ullmann算法</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>​    为了在全天星图中找到想要识别的星体，如果仅凭肉眼，是很难实现的，那么我们就需要寻求计算机的帮助，设计高效的算法来进行精准快速的匹配。也就应运而生了两种主要的算法</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+子图同构算法 & Subgraph & isomorphism & problem \\
+模式识别算法 & Pattern & recognition & algorithms
+\end{cases}</script><p>目前图同构常用算法大概有：</p>
+<blockquote>
+<p>Ullmann算法、VF算法、VF2算法、vf2x算法</p>
+</blockquote>
+<p>这里我们主要研究子图同构算法中的Ullmann算法！</p>
+<p><img src="https://s2.loli.net/2022/11/26/1MDkmJEfiq2xRhy.webp" alt="340e4eb8b43ea8dbd3a60081189c2cf7deb21640.webp"></p>
+<h2 id="问题性质"><a href="#问题性质" class="headerlink" title="问题性质"></a>问题性质</h2><h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><p><img src="https://s2.loli.net/2022/11/26/jkmTFVhrPWuOMyd.png" alt="无标题-2.png"></p>
+<h4 id="P类问题（Polynomial-Problem）"><a href="#P类问题（Polynomial-Problem）" class="headerlink" title="P类问题（Polynomial Problem）"></a>P类问题（Polynomial Problem）</h4><p>P类问题是指<strong>一类能够用确定性算法在多项式时间内求解的判定问题</strong>。</p>
+<p>（对于某些非正式的定义中，我们可以把那些在多项式时间内求解的问题也称为P类问题）</p>
+<p> <code>for example:</code><strong>矩阵乘法</strong>就是一个P类问题，其时间复杂度为$ \mathcal{O}(n ^ 3) $</p>
+<h4 id="NP类问题（Non-deterministic-Polynomial-Problem）"><a href="#NP类问题（Non-deterministic-Polynomial-Problem）" class="headerlink" title="NP类问题（Non-deterministic Polynomial Problem）"></a>NP类问题（Non-deterministic Polynomial Problem）</h4><p>NP类问题分为猜测和验证过程。NP问题是指不能再多项式时间内解决或者不确定能不能在多项式时间内解决，但可以在多项式时间内验证一个解的问题。</p>
+<p>其也可以理解为，可在多项式时间内猜出一个解的问题。比如，在某个题中，找一个解很难，但验证一个解很容易。</p>
+<p><code>for example:</code><strong>商旅性问题</strong>（TSP，Traveling Salesman Problem）的判定就是一个NP类问题，其时间复杂度$ \mathcal{O}(n) $</p>
+<h4 id="NP-complete问题（NP-complete-problem）"><a href="#NP-complete问题（NP-complete-problem）" class="headerlink" title="NP-complete问题（NP-complete problem）"></a>NP-complete问题（NP-complete problem）</h4><p>我们判定一个问题D是NP-complete问题的条件：</p>
+<p><code>(1)</code>D属于NP类问题</p>
+<p><code>(2)</code>NP中的任何问题都可以在多项式时间内转化为D</p>
+<p><strong>证明方法</strong>：必须找到一个已知的NPC问题可以转化为当前问题D，则当前问题D为NPC问题（也就相当于一种数学归纳法）</p>
+<p><code>for example:</code><strong>集团决策问题</strong>就是一个NP-complete问题。</p>
+<h4 id="NP-hard问题（NP-hard-problem）"><a href="#NP-hard问题（NP-hard-problem）" class="headerlink" title="NP-hard问题（NP-hard problem）"></a>NP-hard问题（NP-hard problem）</h4><p>一个问题如果满足条件<code>(2)</code>但不满足条件<code>(1)</code>，那就称之为NP-hard问题</p>
+<p><code>for example:</code>在某些任意大得<strong>棋盘游戏</strong>中走出必胜策略，就是一个NP-hard问题。另外，<strong>Hamilton回路问题</strong>，<strong>最大团问题</strong>也是NP-hard问题。</p>
+<h3 id="综述"><a href="#综述" class="headerlink" title="综述"></a>综述</h3><p>P类问题随着数据规模增大，算法消耗时间会以常数或者线性关系增长，不会爆炸增长。</p>
+<p>NP类问题、NP-complete问题，可能会随着数据规模增大，算法消耗时间成指数级爆炸增长</p>
+<p><strong>线性增长（多项式时间复杂度）</strong>，如$ \mathcal{O}(1) \ \mathcal{O}(n) \ \mathcal{O}(\log(n)) \ \mathcal{O}(n ^ a) $</p>
+<h2 id="子图同构问题"><a href="#子图同构问题" class="headerlink" title="子图同构问题"></a>子图同构问题</h2><h3 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h3><p>对于两张图$ H = (V <em> H, E </em> H) $和$ G = (V <em> G, E </em> G) $，如果存在一个单射$ f : V <em> H \rightarrow V $，如果$  \forall E(u, v) \in E </em> H $，有$ E(f(u), f(v)) \in E_G $，则称图$H$是$G$的子图</p>
+<p><img src="https://s2.loli.net/2022/11/26/ixj5KBZlCh8gsU2.png" alt="无标题-1.png"></p>
+<h3 id="问题性质-1"><a href="#问题性质-1" class="headerlink" title="问题性质"></a>问题性质</h3><p>结论：子图同构问题是NP-complete问题</p>
+<p>即，NP中任何问题都可以在多项式时间复杂度内转化为子图同构问题。</p>
+<h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><p>我们的证明肯定是围绕一个已知的NP-complete问题展开（当然也可以先证明它是一个NP问题，再证明它是一个NP-hard问题以此来得到NP-complete问题），比如以集团决策问题为基础。</p>
+<p><img src="https://s2.loli.net/2022/11/26/3Ts4iflne8jCtg2.png" alt="无标题.png"></p>
+<h4 id="证明"><a href="#证明" class="headerlink" title="证明"></a>证明</h4><p>设集团决策问题输入图为<code>G(v,e)</code>，如果<code>G</code>中包含一个大小为<code>k</code>的完全图，那么判定为<code>true</code>。</p>
+<p>我们令<code>G1</code>为<code>k</code>个顶点的完全图，<code>G2</code>为<code>G(v,e)</code>，易知，$ k \leq n $（其中<code>n</code>为<code>G2</code>中顶点数，<code>k</code>为<code>G1</code>完全图中顶点数），从<code>G</code>中生成这两张图需要的时间：$ \mathcal{O}(k ^ 2) = \mathcal{O}(n ^ 2) $，以及边的$ edge = {n \choose k} = \frac{k \times (k - 1)}{2} $，所以仅需要在多项式时间复杂度内就可以创建出两个子图。进一步，如果<code>G1</code>为<code>G2</code>的子图同构，那么<code>G</code>中也就有大小为<code>k</code>的完全图，所以如果集团决策问题判定为<code>true</code>，那么该问题在多项式时间下对应的子图同构问题也判定为<code>true</code>，反之亦然。</p>
+<p>综上所述，子图同构算法为NP-complete问题！</p>
+<h3 id="Ullmann算法思路"><a href="#Ullmann算法思路" class="headerlink" title="Ullmann算法思路"></a>Ullmann算法思路</h3><p>这里，我们使用Ullmann算法解决问题</p>
+<p>Ullmann算法的基本思路是：设<code>H</code>为子图，<code>G</code>为被匹配图，尝试用邻接矩阵将两张图存下来，之后枚举不同的映射，将<code>H</code>图中映射到<code>G</code>中的点及其附属的边抽离出来得到点数与<code>H</code>相等的图<code>C</code>，再判断是否满足$ \forall E(u, v) \in H \ s.t \ E(f(u), f(v)) \in C $则改映射<code>f</code>判定为<code>true</code></p>
+<p>综上，实现该算法的步骤大致分为：枚举映射，判断结果</p>
+<h4 id="枚举映射"><a href="#枚举映射" class="headerlink" title="枚举映射"></a>枚举映射</h4><h5 id="定理①"><a href="#定理①" class="headerlink" title="定理①"></a>定理①</h5><hr>
+<blockquote>
+<p>一个映射<code>f</code>是合法映射的必要条件是$ \forall u \in H，d(u) \leq d(f(u)) $</p>
+</blockquote>
+<hr>
+<p>我们可以将输入的两个图用邻接矩阵$ M <em> A \ M </em> B $来存储，并记录每个点的度数，通过判断$ d(u) \leq d(f(u)) $，我们可以得到一个$ k \times n $的矩阵$M$。</p>
+<h5 id="定理②"><a href="#定理②" class="headerlink" title="定理②"></a>定理②</h5><hr>
+<blockquote>
+<p>用邻接矩阵表示一个映射<code>f</code>，其满足的必要条件是每一行有一个<code>1</code>，且每一列至多一个<code>1</code></p>
+</blockquote>
+<hr>
+<p>通过映射矩阵$M _ x$的定义方式，我们很容易得到这个结论</p>
+<p>故，我们可以得到枚举的策略：</p>
+<p><strong>递归构造映射矩阵$ M _ x $</strong></p>
+<p>递归行数$i$，对于每一行，枚举列$j$，如果$ M<em>{i, j} = true $，则可以将映射矩阵的当且位置$ M</em>{x, i, j} $设为<code>true</code>，之后递归到下一行。</p>
+<p>递归终止信息是当前递归$ i &gt; k $，此时便开始进行映射矩阵<code>f</code>的判断</p>
+<p>当递归会当前行$i$时，将$ M _ {x, i, j} $回退到<code>false</code>，循环进入下一列，以此类推。</p>
+<h4 id="判断结果"><a href="#判断结果" class="headerlink" title="判断结果"></a>判断结果</h4><p>判断过程我们之前已经提到过了，通过一定的矩阵运算得到从<code>G</code>中剥离出来的仅含有<code>H</code>中点的状态矩阵$ M _ c $</p>
+<h5 id="定理③"><a href="#定理③" class="headerlink" title="定理③"></a>定理③</h5><hr>
+<blockquote>
+<p>$ M <em> c = M </em> x (M <em> x M </em> B) ^ T $</p>
+</blockquote>
+<hr>
+<p>证明：</p>
+<p>以便我们理清这个变换过程，首先需要明确每个矩阵以及每个过程中能够得到的矩阵的几何含义</p>
+<p>$ M <em> {x, i, j} $表示的是$ M </em> x $矩阵第<code>i</code>行，第<code>j</code>列，其状态<code>1(true)/0(false)</code>表示图<code>H</code>的标号为<code>i</code>的点是否映射到图<code>G</code>中的标号为<code>j</code>的点。其是一个$ k \times n $的矩阵</p>
+<p>$ M <em> {B, i, j} $表示的是$ M </em> B $矩阵第<code>i</code>行，第<code>j</code>列，其状态<code>1(true)/0(false)</code>表示<code>G</code>中标号为<code>i</code>的点和标号为<code>j</code>的点之间是否有边。其是一个$ n \times n $的矩阵</p>
+<p>对于第一步</p>
+<p>这两者相乘得到一个$ k \times n $的矩阵，其第<code>i</code>行，第<code>j</code>列为<code>true</code>当且仅当中图<code>H</code>中<code>i</code>映射到<code>G</code>中的<code>k</code>，并且<code>G</code>中<code>k</code>和<code>j</code>之间有边。所以，得到的$ M <em> x M </em> B $矩阵就是一个将<code>G</code>中的被映射顶点编号改为<code>H</code>中映射顶点编号的图，其状态<code>1(true)/0(false)</code>即<code>H</code>中的<code>i</code>映射到<code>G</code>中之后是否和<code>j</code>有边</p>
+<p>接下来我们进行下一步</p>
+<p>将得到的矩阵进行转置，则其第<code>i</code>行，第<code>j</code>列，状态<code>1(true)/0(false)</code>表示<code>G</code>中点<code>i</code>是否和<code>H</code>中的<code>j</code>映射后的点有边。其是一个$ n \times k $的矩阵</p>
+<p>那么两个相乘得到一个$ k \times k $的矩阵，其第<code>i</code>行，第<code>j</code>列为<code>true</code>当且仅当图<code>H</code>中<code>i</code>映射到<code>G</code>中的<code>k</code>，并且<code>G</code>中的<code>k</code>与映射之前图<code>H</code>中的<code>j</code>有边。所以得到的矩阵$ M <em> x (M </em> x M <em> B) ^ T $就是将点从<code>G</code>中剥离出来的图<code>C</code>的邻接矩阵，且点编号和<code>H</code>中相同，也就是需要的$ M </em> c $</p>
+<p>证毕！</p>
+<hr>
+<p>之后便可以通过判断是否满足$ \forall M <em> {A, i, j} = true $有$ M </em> {c,i, j} = true $来记录符合条件的映射矩阵了！</p>
+<h3 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h3><p>（由于子图同构为NP-complete问题，目前不知道是否存在多项式时间复杂度算法）</p>
+<p>最差情况为映射矩阵$M$几乎填满，此时递归时间复杂度为$ \mathcal{O}(n !) $</p>
+<p>对于每次判断需要进行矩阵乘法，时间复杂度为$ \mathcal{O}(n ^ 3) $</p>
+<p> 所以整体的时间<strong>复杂度为$ \mathcal{O}(n ! \ n ^ 3) $</strong></p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// By DeNeRATe 杨佳宇轩</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ll long long</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> de(x) cerr &lt;&lt; #x &lt;&lt; <span class="string">&quot; = &quot;</span> &lt;&lt; x &lt;&lt; <span class="string">&quot; &quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> rep(i, a, b) for(int i = a; i &lt;= b; i++)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> per(i, a, b) for(int i = a; i &gt;= b; i--)</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> maxn = <span class="number">12</span>, maxm = <span class="number">1e5</span> + <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">node</span> &#123; <span class="comment">// 用结构体封装</span></span><br><span class="line">    <span class="type">int</span> squ[maxn][maxn]; <span class="comment">// 关系矩阵</span></span><br><span class="line">    <span class="type">int</span> cnt[maxn]; <span class="comment">// 图中每个点的度数</span></span><br><span class="line">    <span class="type">int</span> row, line; <span class="comment">// 矩阵的行列</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="type">void</span> <span class="title">clean</span><span class="params">()</span> </span>&#123; <span class="built_in">rep</span>(i, <span class="number">1</span>, row) <span class="built_in">rep</span>(j, <span class="number">1</span>, line) &#123; squ[i][j] = <span class="number">0</span>; &#125; &#125; <span class="comment">// 初始化矩阵为零矩阵</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">friend</span> istream &amp; <span class="keyword">operator</span> &gt;&gt; (istream &amp;is, node &amp;temp) &#123; <span class="comment">// 结构体重载流输入</span></span><br><span class="line">        <span class="type">int</span> u, v;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Please input the number of points in the graph\n&quot;</span>);</span><br><span class="line">        cin &gt;&gt; temp.row; temp.line = temp.row; <span class="comment">// 先输入当前图的点数，之后形成一个deg = 点数的矩阵</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Then please input the edge relationship of the graph with \&quot;0 0\&quot; as the end of the order\n&quot;</span>);</span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>) &#123; <span class="comment">// 输入每一条边，顺便记录每点度数，且形成邻接矩阵</span></span><br><span class="line">            cin &gt;&gt; u &gt;&gt; v;</span><br><span class="line">            <span class="keyword">if</span>(!u || !v) <span class="keyword">break</span>;</span><br><span class="line">            temp.squ[u][v] = temp.squ[v][u] = <span class="number">1</span>;</span><br><span class="line">            temp.cnt[u]++; temp.cnt[v]++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">friend</span> ostream &amp; <span class="keyword">operator</span> &lt;&lt; (ostream &amp;os, <span class="type">const</span> node &amp;temp) &#123; <span class="comment">// 结构体重载流输出，将矩阵按格式输出</span></span><br><span class="line">        <span class="built_in">rep</span>(i, <span class="number">1</span>, temp.row) &#123; <span class="built_in">rep</span>(j, <span class="number">1</span>, temp.line)</span><br><span class="line">            cout &lt;&lt; temp.squ[i][j] &lt;&lt; <span class="string">&quot; &quot;</span>;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">friend</span> node <span class="keyword">operator</span> * (node a, node b) &#123; <span class="comment">// 结构体中重载乘法为矩阵乘法</span></span><br><span class="line">        node temp;</span><br><span class="line">        temp.row = a.row, temp.line = b.line;</span><br><span class="line">        temp.<span class="built_in">clean</span>();</span><br><span class="line">        <span class="built_in">rep</span>(i, <span class="number">1</span>, temp.row) <span class="built_in">rep</span>(j, <span class="number">1</span>, temp.line) &#123;</span><br><span class="line">            <span class="built_in">rep</span>(k, <span class="number">1</span>, a.line) </span><br><span class="line">                temp.squ[i][j] += a.squ[i][k] * b.squ[k][j];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> temp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">inline</span> node <span class="title">trans</span><span class="params">()</span> </span>&#123; <span class="comment">// 矩阵的转置操作</span></span><br><span class="line">        node temp;</span><br><span class="line">        temp.<span class="built_in">clean</span>(); temp.row = line; temp.line = row;</span><br><span class="line">        <span class="built_in">rep</span>(i, <span class="number">1</span>, temp.row) <span class="built_in">rep</span>(j, <span class="number">1</span>, temp.line) &#123;</span><br><span class="line">            temp.squ[i][j] = squ[j][i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;sta, ed, tr, now; </span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">sta为匹配图</span></span><br><span class="line"><span class="comment">ed为原图，被匹配图</span></span><br><span class="line"><span class="comment">tr为极大映射关系矩阵</span></span><br><span class="line"><span class="comment">now为临时映射矩阵</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line">vector&lt;node&gt; res; <span class="comment">// 存放满足条件的映射矩阵</span></span><br><span class="line"><span class="type">bool</span> jud[maxn]; <span class="comment">// 判断临时映射矩阵now中当前列是否已经有了1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;The first matrix is the subgraph and the second is the matched graph\n\n&quot;</span>);</span><br><span class="line">    <span class="built_in">Sleep</span>(<span class="number">5000</span>); <span class="comment">// 等待5000ms（5s）</span></span><br><span class="line">    cin &gt;&gt; sta &gt;&gt; ed; <span class="comment">// 输入这两个图，转化为邻接矩阵</span></span><br><span class="line">    tr.row = sta.row; tr.line = ed.line;</span><br><span class="line">    now.row = sta.row; now.line = ed.line; <span class="comment">// 映射矩阵规格赋值</span></span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, sta.row) <span class="built_in">rep</span>(j, <span class="number">1</span>, ed.line) </span><br><span class="line">        <span class="keyword">if</span>(sta.cnt[i] &lt;= ed.cnt[j]) </span><br><span class="line">        tr.squ[i][j] = <span class="number">1</span>; <span class="comment">// 如果sta中某点度数小于ed中某点度数则tr极大映射矩阵当前位置为true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">bool</span> <span class="title">check</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    node temp = now * (now * ed).<span class="built_in">trans</span>(); <span class="comment">// 生成仅由sta中的点组成的ed子图</span></span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, sta.row) <span class="built_in">rep</span>(j, <span class="number">1</span>, sta.line) </span><br><span class="line">        <span class="keyword">if</span>(sta.squ[i][j] &amp;&amp; !temp.squ[i][j]) <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">// 进行判断，满足sta中每一条边temp都有</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">void</span> <span class="title">generate</span><span class="params">(<span class="type">int</span> dep)</span> </span>&#123; <span class="comment">// 每行选取一个1，且每列至多选取一个1</span></span><br><span class="line">    <span class="keyword">if</span>(dep &gt; tr.row) &#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">check</span>()) res.<span class="built_in">push_back</span>(now); <span class="comment">// 如果这个映射矩阵生成了，那么就用check()函数来进行判断</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">rep</span>(j, <span class="number">1</span>, tr.line) &#123;</span><br><span class="line">        <span class="keyword">if</span>(!tr.squ[dep][j] || jud[j]) <span class="keyword">continue</span>;</span><br><span class="line">        now.squ[dep][j] = <span class="number">1</span>;</span><br><span class="line">        jud[j] = <span class="literal">true</span>;</span><br><span class="line">        <span class="built_in">generate</span>(dep + <span class="number">1</span>);</span><br><span class="line">        now.squ[dep][j] = <span class="number">0</span>;</span><br><span class="line">        jud[j] = <span class="literal">false</span>; <span class="comment">// 复原，以便枚举到下一个映射矩阵</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="comment">// 整体递归处理</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">init</span>(); <span class="comment">// 初始化函数</span></span><br><span class="line">    <span class="built_in">generate</span>(<span class="number">1</span>); <span class="comment">// 生成所有情况的映射关系，进行判断</span></span><br><span class="line">    <span class="keyword">if</span>(!res.<span class="built_in">size</span>()) &#123; <span class="comment">// 如果没有满足条件的子图同构的映射</span></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;no mapping relationships\n&quot;</span>; </span><br><span class="line">        <span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;The mapping relationships are as follows\n&quot;</span>);</span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">0</span>, res.<span class="built_in">size</span>() - <span class="number">1</span>) &#123; <span class="comment">// 输出每个满足条件的映射关系矩阵</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%dth:\n&quot;</span>, i);</span><br><span class="line">        cout &lt;&lt; res[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// for an idea：连上esp32 将这个图用OLED输出出来，感觉不错，哈哈哈</span></span><br><span class="line"><span class="comment">//时间复杂度：O(deg! * deg ^ 3) 大概1s可处理8个点连成的完全图</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">示例：</span></span><br><span class="line"><span class="comment">3</span></span><br><span class="line"><span class="comment">1 2</span></span><br><span class="line"><span class="comment">1 3</span></span><br><span class="line"><span class="comment">0 0</span></span><br><span class="line"><span class="comment">4</span></span><br><span class="line"><span class="comment">1 2</span></span><br><span class="line"><span class="comment">1 3</span></span><br><span class="line"><span class="comment">2 3</span></span><br><span class="line"><span class="comment">2 4</span></span><br><span class="line"><span class="comment">3 4</span></span><br><span class="line"><span class="comment">0 0</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h2 id="算法在星图中的应用"><a href="#算法在星图中的应用" class="headerlink" title="算法在星图中的应用"></a>算法在星图中的应用</h2><p>​    在实际应用中，算法直接或间接利用角距、以线段、三角形、四边形等为基本匹配元素，并按照一定方式组织导航特征表。利用这些基本元素的组合，一旦在全天星图中找到唯一符合匹配条件的区域（子图），则它就是观测星图的对应匹配。具体的，大概以多边形算法、三角形算法、匹配组算法等。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Carve104/article/details/125249112">【简述】【图】P类问题、NP类问题、NP完全问题和NP难问题</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42066990/article/details/118359432">P问题、NP问题、NPC问题、NPH问题详解</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/chichoxian/article/details/52746232">子图同构问题与Ullmann Algorithm 算法（一）</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.imangodoc.com/79033.html">证明子图同构问题是NP完全的</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.imangodoc.com/98827.html">证明集团决策问题是NP完全的</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/BUAA/" rel="tag"># BUAA</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/18/%E6%B0%91%E7%94%A8%E8%88%AA%E7%A9%BA%E4%B8%8E%E5%AF%BC%E8%88%AA%E6%8A%80%E6%9C%AF/" rel="prev" title="民用航空与导航技术">
+      <i class="fa fa-chevron-left"></i> 民用航空与导航技术
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/11/26/%E4%B8%8B%E8%87%AA%E6%88%90%E8%B9%8A%E4%B8%89%E5%8D%81%E8%BD%BD%EF%BC%8C%E7%88%86%E8%BD%B0%E9%97%AA%E5%85%89%E9%93%B8%E8%BE%89%E7%85%8C/" rel="next" title="下自成蹊三十载，爆轰闪光铸辉煌">
+      下自成蹊三十载，爆轰闪光铸辉煌 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%98%9F%E5%9B%BE%E7%A0%94%E7%A9%B6%E2%80%94%E2%80%94%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84Ullmann%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">星图研究——子图同构Ullmann算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%80%A7%E8%B4%A8"><span class="nav-number">1.2.</span> <span class="nav-text">问题性质</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#P%E7%B1%BB%E9%97%AE%E9%A2%98%EF%BC%88Polynomial-Problem%EF%BC%89"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">P类问题（Polynomial Problem）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NP%E7%B1%BB%E9%97%AE%E9%A2%98%EF%BC%88Non-deterministic-Polynomial-Problem%EF%BC%89"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">NP类问题（Non-deterministic Polynomial Problem）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NP-complete%E9%97%AE%E9%A2%98%EF%BC%88NP-complete-problem%EF%BC%89"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">NP-complete问题（NP-complete problem）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NP-hard%E9%97%AE%E9%A2%98%EF%BC%88NP-hard-problem%EF%BC%89"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">NP-hard问题（NP-hard problem）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%BC%E8%BF%B0"><span class="nav-number">1.2.2.</span> <span class="nav-text">综述</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">子图同构问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AE%B9"><span class="nav-number">1.3.1.</span> <span class="nav-text">内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%80%A7%E8%B4%A8-1"><span class="nav-number">1.3.2.</span> <span class="nav-text">问题性质</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%81%E6%98%8E"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">证明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ullmann%E7%AE%97%E6%B3%95%E6%80%9D%E8%B7%AF"><span class="nav-number">1.3.3.</span> <span class="nav-text">Ullmann算法思路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%9A%E4%B8%BE%E6%98%A0%E5%B0%84"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">枚举映射</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E2%91%A0"><span class="nav-number">1.3.3.1.1.</span> <span class="nav-text">定理①</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E2%91%A1"><span class="nav-number">1.3.3.1.2.</span> <span class="nav-text">定理②</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E7%BB%93%E6%9E%9C"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">判断结果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E2%91%A2"><span class="nav-number">1.3.3.2.1.</span> <span class="nav-text">定理③</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">1.3.4.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.3.5.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%9C%A8%E6%98%9F%E5%9B%BE%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">1.4.</span> <span class="nav-text">算法在星图中的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">1.5.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="DeNeRATe"
+      src="/images/gravatar.jpg">
+  <p class="site-author-name" itemprop="name">DeNeRATe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/DeNeRATe-cool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;DeNeRATe-cool" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.luogu.com.cn/user/38171" title="luogu → https:&#x2F;&#x2F;www.luogu.com.cn&#x2F;user&#x2F;38171" rel="noopener" target="_blank"><i class="fa fa-fw fa-code"></i>luogu</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/2471749995?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;2471749995?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">dx</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/2176432198?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;2176432198?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">qrp</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/2609805018?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;2609805018?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">wzh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://user.qzone.qq.com/630118646?source=namecardhoverqzone" title="https:&#x2F;&#x2F;user.qzone.qq.com&#x2F;630118646?source&#x3D;namecardhoverqzone" rel="noopener" target="_blank">syh</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DeNeRATe</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="Symbols count total">119k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">1:48</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v6.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'uXldDxmh5eK3mUatmlEkTUI5-gzGzoHsz',
+      appKey     : 'WVg9f2AP47AOb3f2TP0n7pnD',
+      placeholder: "please input your comment...",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
